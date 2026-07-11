@@ -77,14 +77,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "MK Store Medan — Skincare Premium Lodella, Cherubic & Dr.Schatz" },
+      { name: "description", content: "MK Store Medan menjual skincare premium: Lodella Essence Booster, Cherubic Facial Wash, dan Dr.Schatz Apple Stem Cell Mask. Pesan langsung via WhatsApp." },
+      { name: "author", content: "MK Store Medan" },
+      { property: "og:title", content: "MK Store Medan — Skincare Premium" },
+      { property: "og:description", content: "Skincare premium: Lodella, Cherubic & Dr.Schatz. Pesan via WhatsApp." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
@@ -92,6 +91,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+    ],
+    scripts: [
+      {
+        children: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1325108846469523');fbq('track','PageView');`,
+      },
     ],
   }),
   shellComponent: RootShell,
