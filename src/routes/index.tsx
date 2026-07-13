@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import lodella from "@/assets/lodella.png.asset.json";
-import cherubic from "@/assets/cherubic.png.asset.json";
-import drschatz from "@/assets/drschatz.png.asset.json";
+
+const lodella = { url: "/products/lodella.png" };
+const cherubic = { url: "/products/cherubic.png" };
+const drschatz = { url: "/products/drschatz.png" };
 
 export const Route = createFileRoute("/")({
   component: Index,
