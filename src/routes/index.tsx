@@ -1,4 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
+
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
+}
 
 const lodella = { url: "/products/lodella.png" };
 const cherubic = { url: "/products/cherubic.png" };
@@ -16,7 +23,13 @@ export const Route = createFileRoute("/")({
 });
 
 const WA_URL =
-  "https://wa.me/6281397029988?text=Halo%20Admin%20MK%20Store%20Medan%20%F0%9F%91%8B%0A%0ASaya%20ingin%20membeli%20skincare.%20Mohon%20bantu%20rekomendasikan%20produk%20yang%20sesuai%20dengan%20kondisi%20kulit%20saya%20beserta%20informasi%20harga%20dan%20cara%20pemakaiannya.%20Terima%20kasih&utm_source=meta_ads&utm_medium=cpc&utm_campaign=wa_consultation&utm_content=lynk_id";
+  "https://wa.me/6281397029988?text=Halo%20Admin%20MK%20Store%20Medan%20%F0%9F%91%8B%0A%0ASaya%20ingin%20membeli%20skincare.%20Mohon%20bantu%20rekomendasikan%20produk%20yang%20sesuai%20dengan%20kondisi%20kulit%20saya%20beserta%20informasi%20harga%20dan%20cara%20pemakaiannya.%20Terima%20kasih&utm_source=meta_ads&utm_medium=cpc&utm_campaign=wa_consultation&utm_content=website_direct";
+
+function trackContact() {
+  if (typeof window !== "undefined" && window.fbq) {
+    window.fbq("track", "Contact");
+  }
+}
 
 type Product = {
   name: string;
