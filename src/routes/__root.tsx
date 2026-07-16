@@ -80,17 +80,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "MK Store Medan — Skincare Premium Lodella, Cherubic & Dr.Schatz" },
       { name: "description", content: "MK Store Medan menjual skincare premium: Lodella Essence Booster, Cherubic Facial Wash, dan Dr.Schatz Apple Stem Cell Mask. Pesan langsung via WhatsApp." },
       { name: "author", content: "MK Store Medan" },
-      { property: "og:title", content: "MK Store Medan — Skincare Premium" },
-      { property: "og:description", content: "Skincare premium: Lodella, Cherubic & Dr.Schatz. Pesan via WhatsApp." },
+      { property: "og:title", content: "MK Store Medan — Skincare Premium Lodella, Cherubic & Dr.Schatz" },
+      { property: "og:description", content: "MK Store Medan menjual skincare premium: Lodella Essence Booster, Cherubic Facial Wash, dan Dr.Schatz Apple Stem Cell Mask. Pesan langsung via WhatsApp." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "MK Store Medan — Skincare Premium Lodella, Cherubic & Dr.Schatz" },
+      { name: "twitter:description", content: "MK Store Medan menjual skincare premium: Lodella Essence Booster, Cherubic Facial Wash, dan Dr.Schatz Apple Stem Cell Mask. Pesan langsung via WhatsApp." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/c50ce18d-2b5e-4f27-b2a0-9b8b7434083b/id-preview-d0f47b51--0a8f3d1f-9875-48bf-8b06-2d3709b5a735.lovable.app-1784174716834.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/c50ce18d-2b5e-4f27-b2a0-9b8b7434083b/id-preview-d0f47b51--0a8f3d1f-9875-48bf-8b06-2d3709b5a735.lovable.app-1784174716834.png" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
     scripts: [
       {
