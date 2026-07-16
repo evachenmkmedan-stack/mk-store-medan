@@ -76,15 +76,16 @@ const products: Product[] = [
 
 function ProductCard({ product: p }: { product: Product }) {
   const ref = useRef<HTMLElement | null>(null);
+  const hasFired = useRef(false);
   useEffect(() => {
     const el = ref.current;
     if (!el || typeof window === "undefined" || !("IntersectionObserver" in window)) return;
-    let fired = false;
+    if (hasFired.current) return;
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting && !fired) {
-            fired = true;
+          if (entry.isIntersecting && !hasFired.current) {
+            hasFired.current = true;
             if (window.fbq) {
               window.fbq("track", "ViewContent", { content_name: p.name });
             }
