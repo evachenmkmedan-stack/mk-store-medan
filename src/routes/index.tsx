@@ -74,6 +74,62 @@ const products: Product[] = [
   },
 ];
 
+function ProductCard({ product: p }: { product: Product }) {
+  const ref = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof window === "undefined" || !("IntersectionObserver" in window)) return;
+    let fired = false;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && !fired) {
+            fired = true;
+            if (window.fbq) {
+              window.fbq("track", "ViewContent", { content_name: p.name });
+            }
+            observer.disconnect();
+          }
+        }
+      },
+      { threshold: 0.4 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [p.name]);
+
+  return (
+    <article
+      ref={ref}
+      className="group flex flex-col overflow-hidden rounded-3xl border border-[#e8dfd0] bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
+    >
+      <div className="aspect-[3/4] overflow-hidden bg-[#f5efe4]">
+        <img src={p.image} alt={p.name} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+      </div>
+      <div className="flex flex-1 flex-col p-6">
+        <h3 className="text-xl font-semibold">{p.name}</h3>
+        <p className="mt-1 text-xs uppercase tracking-wider text-[#a08a5c]">{p.tagline}</p>
+        <p className="mt-4 flex-1 text-sm leading-relaxed text-[#5a4f3e]">{p.description}</p>
+        <ul className="mt-5 flex flex-wrap gap-2">
+          {p.benefits.map((b) => (
+            <li key={b} className="rounded-full bg-[#f5efe4] px-3 py-1 text-xs text-[#5a4f3e]">{b}</li>
+          ))}
+        </ul>
+        <div className="mt-6 flex items-end justify-between border-t border-[#f0e8d8] pt-5">
+          <div>
+            <p className="text-xs uppercase tracking-wider text-[#a08a5c]">Harga</p>
+            <p className="text-lg font-semibold">{p.price}</p>
+          </div>
+        </div>
+        <div className="mt-4 grid grid-cols-2 gap-2">
+          <a href={WA_URL} target="_blank" rel="noopener noreferrer" onClick={trackContact} className="rounded-full bg-[#1e3a2b] px-4 py-2.5 text-center text-sm font-medium text-[#faf7f2] transition hover:bg-[#2a5140]">Pesan WA</a>
+          <a href={p.shopee} target="_blank" rel="noopener noreferrer" className="rounded-full border border-[#ee4d2d] px-4 py-2.5 text-center text-sm font-medium text-[#ee4d2d] transition hover:bg-[#ee4d2d] hover:text-white">Shopee</a>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 function Index() {
   return (
     <div className="min-h-screen bg-[#faf7f2] text-[#2a2419]">
