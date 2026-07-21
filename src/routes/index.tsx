@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 declare global {
   interface Window {
     fbq?: (...args: unknown[]) => void;
+    gtag?: (...args: unknown[]) => void;
   }
 }
 
@@ -25,10 +26,36 @@ export const Route = createFileRoute("/")({
 const WA_URL =
   "https://wa.me/6281397029988?text=Halo%20Admin%20MK%20Store%20Medan%20%F0%9F%91%8B%0A%0ASaya%20ingin%20membeli%20skincare.%20Mohon%20bantu%20rekomendasikan%20produk%20yang%20sesuai%20dengan%20kondisi%20kulit%20saya%20beserta%20informasi%20harga%20dan%20cara%20pemakaiannya.%20Terima%20kasih&utm_source=meta_ads&utm_medium=cpc&utm_campaign=wa_consultation&utm_content=website_direct";
 
-function trackContact() {
-  if (typeof window !== "undefined" && window.fbq) {
-    window.fbq("track", "Contact");
+function gtagEvent(name: string, params: Record<string, unknown> = {}) {
+  if (typeof window !== "undefined" && window.gtag) {
+    window.gtag("event", name, {
+      page_location: typeof window !== "undefined" ? window.location.href : undefined,
+      ...params,
+    });
   }
+}
+
+function fbqTrack(event: string, params?: Record<string, unknown>) {
+  if (typeof window !== "undefined" && window.fbq) {
+    if (params) window.fbq("track", event, params);
+    else window.fbq("track", event);
+  }
+}
+
+function trackWhatsApp(buttonName: string) {
+  return () => {
+    gtagEvent("click_whatsapp", { button_name: buttonName });
+    fbqTrack("Lead", { button_name: buttonName });
+  };
+}
+
+function trackConsultation() {
+  gtagEvent("consultation_click");
+  fbqTrack("Contact");
+}
+
+function trackViewProducts() {
+  gtagEvent("view_products_click");
 }
 
 type Product = {
@@ -86,9 +113,8 @@ function ProductCard({ product: p }: { product: Product }) {
         for (const entry of entries) {
           if (entry.isIntersecting && !hasFired.current) {
             hasFired.current = true;
-            if (window.fbq) {
-              window.fbq("track", "ViewContent", { content_name: p.name });
-            }
+            fbqTrack("ViewContent", { content_name: p.name });
+            gtagEvent("view_item", { item_name: p.name });
             observer.disconnect();
           }
         }
@@ -123,7 +149,7 @@ function ProductCard({ product: p }: { product: Product }) {
           </div>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-2">
-          <a href={WA_URL} target="_blank" rel="noopener noreferrer" onClick={trackContact} className="rounded-full bg-[#1e3a2b] px-4 py-2.5 text-center text-sm font-medium text-[#faf7f2] transition hover:bg-[#2a5140]">Pesan WA</a>
+          <a href={WA_URL} target="_blank" rel="noopener noreferrer" onClick={trackWhatsApp(`product_${p.name}`)} className="rounded-full bg-[#1e3a2b] px-4 py-2.5 text-center text-sm font-medium text-[#faf7f2] transition hover:bg-[#2a5140]">Pesan WA</a>
           <a href={p.shopee} target="_blank" rel="noopener noreferrer" className="rounded-full border border-[#ee4d2d] px-4 py-2.5 text-center text-sm font-medium text-[#ee4d2d] transition hover:bg-[#ee4d2d] hover:text-white">Shopee</a>
         </div>
       </div>
@@ -132,6 +158,25 @@ function ProductCard({ product: p }: { product: Product }) {
 }
 
 function Index() {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    let fired = false;
+    const onScroll = () => {
+      if (fired) return;
+      const doc = document.documentElement;
+      const scrolled = window.scrollY + window.innerHeight;
+      const total = doc.scrollHeight;
+      if (total > 0 && scrolled / total >= 0.9) {
+        fired = true;
+        gtagEvent("scroll_90");
+        window.removeEventListener("scroll", onScroll);
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#faf7f2] text-[#2a2419]">
       <header className="sticky top-0 z-40 border-b border-[#e8dfd0] bg-[#faf7f2]/85 backdrop-blur">
@@ -149,7 +194,7 @@ function Index() {
             href={WA_URL}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={trackContact}
+            onClick={trackWhatsApp("header_pesan_wa")}
             className="rounded-full bg-[#1e3a2b] px-5 py-2 text-sm font-medium text-[#faf7f2] transition hover:bg-[#2a5140]"
           >
             Pesan via WA
@@ -173,10 +218,10 @@ function Index() {
               <span className="text-[#2a2419]"> Dr.Schatz</span>. Konsultasi kondisi kulitmu langsung dengan admin kami.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <a href={WA_URL} target="_blank" rel="noopener noreferrer" onClick={trackContact} className="rounded-full bg-[#1e3a2b] px-7 py-3 text-sm font-medium text-[#faf7f2] transition hover:bg-[#2a5140]">
+              <a href={WA_URL} target="_blank" rel="noopener noreferrer" onClick={trackConsultation} className="rounded-full bg-[#1e3a2b] px-7 py-3 text-sm font-medium text-[#faf7f2] transition hover:bg-[#2a5140]">
                 Konsultasi Gratis
               </a>
-              <a href="#products" className="rounded-full border border-[#2a2419]/20 px-7 py-3 text-sm font-medium text-[#2a2419] transition hover:border-[#2a2419]">
+              <a href="#products" onClick={trackViewProducts} className="rounded-full border border-[#2a2419]/20 px-7 py-3 text-sm font-medium text-[#2a2419] transition hover:border-[#2a2419]">
                 Lihat Produk
               </a>
             </div>
@@ -233,7 +278,7 @@ function Index() {
         <div className="mx-auto max-w-4xl px-6 py-20 text-center">
           <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">Belum yakin produk mana yang cocok?</h2>
           <p className="mt-4 text-[#d8d0bb]">Chat admin MK Store Medan untuk konsultasi gratis. Kami bantu rekomendasikan produk sesuai kondisi kulitmu.</p>
-          <a href={WA_URL} target="_blank" rel="noopener noreferrer" onClick={trackContact} className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#c9a84c] px-8 py-3 text-sm font-semibold text-[#1e3a2b] transition hover:bg-[#dbbe6b]">
+          <a href={WA_URL} target="_blank" rel="noopener noreferrer" onClick={trackWhatsApp("contact_section")} className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#c9a84c] px-8 py-3 text-sm font-semibold text-[#1e3a2b] transition hover:bg-[#dbbe6b]">
             Chat via WhatsApp →
           </a>
         </div>
@@ -246,7 +291,7 @@ function Index() {
         </div>
       </footer>
 
-      <a href={WA_URL} target="_blank" rel="noopener noreferrer" onClick={trackContact} aria-label="Chat via WhatsApp" className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition hover:scale-110">
+      <a href={WA_URL} target="_blank" rel="noopener noreferrer" onClick={trackWhatsApp("floating_icon")} aria-label="Chat via WhatsApp" className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition hover:scale-110">
         <svg viewBox="0 0 24 24" fill="currentColor" className="h-7 w-7"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.999-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.464 3.488"/></svg>
       </a>
 
