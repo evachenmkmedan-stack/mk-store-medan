@@ -80,6 +80,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "MK Store Medan — Skincare Premium Lodella, Cherubic & Dr.Schatz" },
       { name: "description", content: "MK Store Medan menjual skincare premium: Lodella Essence Booster, Cherubic Facial Wash, dan Dr.Schatz Apple Stem Cell Mask. Pesan langsung via WhatsApp." },
       { name: "author", content: "MK Store Medan" },
+      { name: "facebook-domain-verification", content: "3a8gm3ddu7or8gq8glf3a476rc9dqy" },
       { property: "og:title", content: "MK Store Medan — Skincare Premium Lodella, Cherubic & Dr.Schatz" },
       { property: "og:description", content: "MK Store Medan menjual skincare premium: Lodella Essence Booster, Cherubic Facial Wash, dan Dr.Schatz Apple Stem Cell Mask. Pesan langsung via WhatsApp." },
       { property: "og:type", content: "website" },
